@@ -24,14 +24,11 @@ GeomKm <- ggplot2::ggproto("GeomKm", Geom,
 
 )
 
-
 #' Display Kaplan Meier Curve
 #'
 #' Kaplan Meier Curve
 #'
 #' @export
-#' @rdname geom_icens
-
 
 GeomIcens <- ggplot2::ggproto("GeomIcens", Geom,
 
@@ -52,22 +49,7 @@ GeomIcens <- ggplot2::ggproto("GeomIcens", Geom,
 
 #' Add a Kaplan-Meier survival curve
 #'
-#' @section Aesthetics:
-#' \code{geom_icens} understands the following aesthetics (required aesthetics
-#' are in bold):
-#' \itemize{
-#'   \item \strong{\code{x}} The survival/censoring times. This is automatically mapped by \link{stat_km}
-#'   \item \strong{\code{y}} The survival probability estimates. This is automatically mapped by \link{stat_km}
-#'   smallest level in sort order is assumed to be 0, with a warning
-#'   \item \code{alpha}
-#'   \item \code{color}
-#'   \item \code{linetype}
-#'   \item \code{size}
-#' }
-#'
 #' @inheritParams ggplot2::geom_point
-#' @seealso The default stat for this geom is \code{\link{stat_km}} see
-#'   that documentation for more options to control the underlying statistical transformation.
 #' @export
 #' @examples
 #' sex <- rbinom(250, 1, .5)

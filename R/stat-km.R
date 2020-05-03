@@ -45,7 +45,6 @@ StatKm <- ggplot2::ggproto("StatKm", Stat,
 #' @importFrom survival Surv survfit.formula
 #' @importFrom grid pointsGrob nullGrob unit gpar gList
 
-#' @rdname stat_icens
 #' @export
 
 StatIcens <- ggplot2::ggproto("StatIcens", Stat,
@@ -142,19 +141,7 @@ StatKmband <- ggplot2::ggproto("StatKmband", Stat,
 )
 
 #' Adds a Kaplan Meier Estimate of Survival
-#'
-#' @section Aesthetics:
-#' \code{stat_km} understands the following aesthetics (required aesthetics
-#' are in bold):
-#' \itemize{
-#'   \item \strong{\code{time}} The survival times
-#'   \item \strong{\code{status}} The censoring indicator, see \link[survival]{Surv} for more information.
-#'   \item \code{alpha}
-#'   \item \code{color}
-#'   \item \code{linetype}
-#'   \item \code{size}
-#' }
-#'
+
 #' @inheritParams ggplot2::stat_identity
 #' @param trans Transformation to apply to the survival probabilities. Defaults
 #'   to "identity". Other options include "event", "cumhaz", "cloglog", or
@@ -162,8 +149,6 @@ StatKmband <- ggplot2::ggproto("StatKmband", Stat,
 #' @param firstx,firsty the starting point for the survival curves. By default,
 #'   the plot program obeys tradition by having the plot start at (0,1).
 #' @param ... Other arguments passed to \code{survival::survfit.formula}
-#' @return a data.frame with additional columns: \item{x}{x in data}
-#'   \item{y}{Kaplan-Meier Survival Estimate at x}
 #' @export
 #'
 #' @rdname stat_icens
@@ -173,23 +158,6 @@ StatKmband <- ggplot2::ggproto("StatKmband", Stat,
 #' right-censored data. It requires the aesthetic mapping \code{x} for the
 #' observation times and \code{status} which indicates the event status,
 #' 0=alive, 1=dead or 1/2 (2=death). Logical status is not supported.
-#'
-#'
-#' @examples
-#' sex <- rbinom(250, 1, .5)
-#' df <- data.frame(time = exp(rnorm(250, mean = sex)), status = rbinom(250, 1, .75), sex = sex)
-#' ggplot(df, aes(time = time, status = status, color = factor(sex))) +
-#'  stat_km()
-#'
-#' ## Examples illustrating the options passed to survfit.formula
-#'
-#' p1 <- ggplot(df, aes(time = time, status = status))
-#' p1 + stat_km()
-#' p1 + stat_km(trans = "cumhaz")
-#' # cloglog plots also log transform the time axis
-#' p1 + stat_km(trans = "cloglog") + scale_x_log10()
-#' p1 + stat_km(type = "fleming-harrington")
-#' p1 + stat_km(start.time = 5)
 #'
 
 stat_icens <- function(mapping = NULL, data = NULL, geom = "icens",
