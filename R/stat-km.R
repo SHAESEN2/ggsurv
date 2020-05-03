@@ -166,7 +166,7 @@ StatKmband <- ggplot2::ggproto("StatKmband", Stat,
 #'   \item{y}{Kaplan-Meier Survival Estimate at x}
 #' @export
 #'
-#' @rdname stat_km
+#' @rdname stat_icens
 #' @details
 #'
 #' This stat is for computing the confidence intervals for the Kaplan-Meier survival estimate for
