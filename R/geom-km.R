@@ -24,6 +24,39 @@ GeomKm <- ggplot2::ggproto("GeomKm", Geom,
 
 )
 
+#' Add a Kaplan-Meier survival curve
+#'
+#' @section Aesthetics:
+#' \code{geom_km} understands the following aesthetics (required aesthetics
+#' are in bold):
+#' \itemize{
+#'   \item \strong{\code{x}} The survival/censoring times. This is automatically mapped by \link{stat_km}
+#'   \item \strong{\code{y}} The survival probability estimates. This is automatically mapped by \link{stat_km}
+#'   smallest level in sort order is assumed to be 0, with a warning
+#'   \item \code{alpha}
+#'   \item \code{color}
+#'   \item \code{linetype}
+#'   \item \code{size}
+#' }
+#'
+#' @inheritParams ggplot2::geom_point
+#' @seealso The default stat for this geom is \code{\link{stat_km}} see
+#'   that documentation for more options to control the underlying statistical transformation.
+#' @export
+#' @examples
+#' sex <- rbinom(250, 1, .5)
+#' df <- data.frame(time = exp(rnorm(250, mean = sex)), status = rbinom(250, 1, .75), sex = sex)
+#' ggplot(df, aes(time = time, status = status, color = factor(sex))) + geom_km()
+
+geom_km <- function(mapping = NULL, data = NULL, stat = "km",
+                    position = "identity", show.legend = NA,
+                    inherit.aes = TRUE, na.rm = TRUE, ...) {
+  ggplot2::layer(
+    geom = GeomKm, mapping = mapping, data = data, stat = stat,
+    position = position, show.legend = show.legend, inherit.aes = inherit.aes,
+    params = list(na.rm = na.rm, ...)
+  )
+}
 
 #' Display Kaplan Meier Curve
 #'
@@ -61,13 +94,13 @@ GeomKmband <- ggplot2::ggproto("GeomKmband", Geom,
 #' @rdname geom_kmticks
 
 GeomKmticks <- ggplot2::ggproto("GeomKmticks", Geom,
-                                
+
                                 draw_group = function(data, scales, coordinates, ...) {
-                                  
+
                                   showpoints <- data$n.censor > 0 & data$n.event == 0
-                                  
+
                                   coordsp <- coordinates$transform(data, scales)[showpoints, , drop = FALSE]
-                                  
+
                                   if(nrow(coordsp) == 0){
                                     grid::nullGrob()
                                   } else {
@@ -82,9 +115,9 @@ GeomKmticks <- ggplot2::ggproto("GeomKmticks", Geom,
                                       )
                                     )
                                   }
-                                  
+
                                 },
-                                
+
                                 required_aes = c("x", "y"),
                                 non_missing_aes = c("size", "shape"),
                                 default_aes = ggplot2::aes(
@@ -92,43 +125,10 @@ GeomKmticks <- ggplot2::ggproto("GeomKmticks", Geom,
                                   alpha = 1, stroke = 0.5, fill = "black"
                                 ),
                                 draw_key = draw_key_point
-                                
+
 )
 
 
-#' Add a Kaplan-Meier survival curve
-#'
-#' @section Aesthetics:
-#' \code{geom_km} understands the following aesthetics (required aesthetics
-#' are in bold):
-#' \itemize{
-#'   \item \strong{\code{x}} The survival/censoring times. This is automatically mapped by \link{stat_km}
-#'   \item \strong{\code{y}} The survival probability estimates. This is automatically mapped by \link{stat_km}
-#'   smallest level in sort order is assumed to be 0, with a warning
-#'   \item \code{alpha}
-#'   \item \code{color}
-#'   \item \code{linetype}
-#'   \item \code{size}
-#' }
-#'
-#' @inheritParams ggplot2::geom_point
-#' @seealso The default stat for this geom is \code{\link{stat_km}} see
-#'   that documentation for more options to control the underlying statistical transformation.
-#' @export
-#' @examples
-#' sex <- rbinom(250, 1, .5)
-#' df <- data.frame(time = exp(rnorm(250, mean = sex)), status = rbinom(250, 1, .75), sex = sex)
-#' ggplot(df, aes(time = time, status = status, color = factor(sex))) + geom_km()
-
-geom_km <- function(mapping = NULL, data = NULL, stat = "km",
-                     position = "identity", show.legend = NA,
-                     inherit.aes = TRUE, na.rm = TRUE, ...) {
-  ggplot2::layer(
-    geom = GeomKm, mapping = mapping, data = data, stat = stat,
-    position = position, show.legend = show.legend, inherit.aes = inherit.aes,
-    params = list(na.rm = na.rm, ...)
-  )
-}
 
 
 #' Add confidence bands to a Kaplan-Meier survival curve

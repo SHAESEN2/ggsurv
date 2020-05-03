@@ -9,39 +9,37 @@
 
 StatKm <- ggplot2::ggproto("StatKm", Stat,
 
-  compute_group = function(data, scales, trans = "identity", firstx = 0, firsty = 1,
-                           type = "kaplan-meier", start.time = 0) {
+                           compute_group = function(data, scales, trans = "identity", firstx = 0, firsty = 1,
+                                                    type = "kaplan-meier", start.time = 0) {
 
-    sf <- survival::survfit.formula(survival::Surv(data$time, data$status) ~ 1, se.fit = FALSE,
-                                    type = type, start.time = start.time)
+                             sf <- survival::survfit.formula(survival::Surv(time = data$time, time2=data$time2, type = "interval2") ~ 1, se.fit = FALSE,
+                                                             type = type, start.time = start.time)
 
-    transloc <- scales::as.trans(trans)$trans
+                             transloc <- scales::as.trans(trans)$trans
 
-    if(is.null(sf$surv)) {
-      x <- rep(sf$time, 2)
-      sf$surv <- rep(1, length(x))
-    }
+                             if(is.null(sf$surv)) {
+                               x <- rep(sf$time, 2)
+                               sf$surv <- rep(1, length(x))
+                             }
 
-    x <- c(firstx, sf$time)
-    y <- transloc(c(firsty, sf$surv))
-    y[y == -Inf] <- min(y[is.finite(y)])
-    y[y == Inf] <- max(y[is.finite(y)])
+                             x <- c(firstx, sf$time)
+                             y <- transloc(c(firsty, sf$surv))
+                             y[y == -Inf] <- min(y[is.finite(y)])
+                             y[y == Inf] <- max(y[is.finite(y)])
 
-    step <- dostep(x, y)
-    df.out <- data.frame(time = step$x, survival = step$y)
+                             step <- dostep(x, y)
+                             df.out <- data.frame(time = step$x, survival = step$y)
 
-    df.out
+                             df.out
 
-  },
+                           },
 
-  default_aes = ggplot2::aes(y = ..survival.., x = ..time..),
-  required_aes = c("time", "status")
+                           default_aes = ggplot2::aes(y = ..survival.., x = ..time..),
+                           required_aes = c("time")
 
 
 )
-
 ## need to create a different stat for kmticks
-
 
 
 #' @importFrom ggplot2 layer aes ggproto
