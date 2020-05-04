@@ -10,13 +10,13 @@ This version of the package is not on CRAN. It can be installed with
 
 ```{r instcran, eval = FALSE}
 install.packages("ggplot2")
-devtools::install_github("sachsmc/ggkm")
+devtools::install_github("tjebo/ggsurv")
 ```
 
 ## Basic usage
 
 ```{r}
-library(ggkm)
+library(ggsurv)
 ggplot(lung, aes(time = time, status = status)) + geom_km()
 ggplot(lung, aes(time = time, status = status)) + geom_km() + facet_wrap(~ sex)
 ggplot(lung, aes(time = time, status = status, color = factor(sex))) + geom_km()

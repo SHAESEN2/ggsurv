@@ -7,12 +7,12 @@ Installation
 This version of the package is not on CRAN. It can be installed with
 
     install.packages("ggplot2")
-    devtools::install_github("sachsmc/ggkm")
+    devtools::install_github("tjebo/ggsurv")
 
 Basic usage
 -----------
 
-    library(ggkm)
+    library(ggsurv)
 
     ## Loading required package: ggplot2
 
@@ -82,6 +82,10 @@ Tranformations
     ggplot(lung, aes(time = time, status = status, color = factor(sex))) + geom_km(trans = "cloglog") + 
       geom_kmticks(trans = "cloglog") + geom_kmband(trans = "cloglog") + ylab("Complementary Log-Log") + scale_x_log10()
 
+    ## Warning: Transformation introduced infinite values in continuous x-axis
+
+    ## Warning: Transformation introduced infinite values in continuous x-axis
+
 ![](README_files/figure-markdown_strict/unnamed-chunk-4-3.png)
 
 Acknowledgements
@@ -100,7 +104,7 @@ Copyright (c) 2016 Michael C Sachs
 
 Permission is hereby granted, free of charge, to any person obtaining a
 copy of this software and associated documentation files (the
-"Software"), to deal in the Software without restriction, including
+“Software”), to deal in the Software without restriction, including
 without limitation the rights to use, copy, modify, merge, publish,
 distribute, sublicense, and/or sell copies of the Software, and to
 permit persons to whom the Software is furnished to do so, subject to
@@ -109,7 +113,7 @@ the following conditions:
 The above copyright notice and this permission notice shall be included
 in all copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS
 OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
 MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
