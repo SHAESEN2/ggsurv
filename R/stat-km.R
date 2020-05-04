@@ -140,8 +140,6 @@ StatKmband <- ggplot2::ggproto("StatKmband", Stat,
 
                                default_aes = ggplot2::aes(ymin = ..lower.., ymax = ..upper.., x = ..time..),
                                required_aes = c("time", "status")
-
-
 )
 
 #' Adds a Kaplan Meier Estimate of Survival
@@ -410,4 +408,94 @@ stat_kmticks <- function(mapping = NULL, data = NULL, geom = "kmticks",
 
 }
 
+
+#' Compute locations for tick marks
+#'
+#' Tick marks are plotted where there are censoring times that are also not event times
+#'
+#' @rdname stat_kmticks
+#' @export
+
+StatIcetic <- ggplot2::ggproto("StatIcetic", Stat,
+  default_aes = ggplot2::aes(y = ..survival.., x = ..time..),
+  required_aes = c("time", "time2"),
+  compute_group = function(data, scales, trans = "identity", ...) {
+    fit_icens <- survival::survfit.formula(
+      survival::Surv(
+        time = data$time, time2 = data$time2,
+        type = "interval2"
+      ) ~ 1,
+      data = data, ...
+    )
+
+    trans <- scales::as.trans(trans)$trans
+
+    fit_icens.df <- data.frame(
+      time = fit_icens$time,
+      survival = trans(fit_icens$surv),
+      n.risk = fit_icens$n.risk,
+      n.censor = fit_icens$n.censor,
+      n.event = fit_icens$n.event
+    )
+
+    fit_icens.df
+  },
+  compute_layer = function(self, data, params, layout) {
+    ggplot2:::check_required_aesthetics(self$required_aes, c(
+      names(data),
+      names(params)
+    ), snake_class(self))
+    data <- remove_missing(data, params$na.rm, "time",
+                           ggplot2:::snake_class(self),
+                           finite = TRUE
+    )
+    params <- params[intersect(names(params), self$parameters())]
+    args <- c(list(data = quote(data), scales = quote(scales)), params)
+    ggplot2:::dapply(data, "PANEL", function(data) {
+      scales <- layout$get_scales(data$PANEL[1])
+      tryCatch(do.call(self$compute_panel, args),
+               error = function(e) {
+                 warning("Computation failed in `",
+                         ggplot2:::snake_class(self),
+                         "()`:\n", e$message,
+                         call. = FALSE
+                 )
+                 ggplot2:::new_data_frame()
+               }
+      )
+    })
+  }
+)
+
+
+
+#' Adds tick marks to a Kaplan Meier Estimate of Survival
+#'
+#' @inheritParams ggplot2::stat_identity
+#' @param trans Transformation to apply to the survival probabilities. Defaults
+#'   to "identity". Other options include "event", "cumhaz", "cloglog", or
+#'   define your own using \link{trans_new}.
+#' @param ... Other arguments passed to \code{survival::survfit.formula}
+#' @return a data.frame with additional columns: \item{x}{x in data}
+#'   \item{y}{Kaplan-Meier Survival Estimate at x}
+#' @export
+#' @rdname stat_icetic
+
+stat_icetic <- function(mapping = NULL, data = NULL, geom = "kmticks",
+                         position = "identity", show.legend = NA, inherit.aes = TRUE, trans, ...) {
+  ggplot2::layer(
+    stat = StatIcetic,
+    data = data,
+    mapping = mapping,
+    geom = geom,
+    position = position,
+    show.legend = show.legend,
+    inherit.aes = inherit.aes,
+    params = list(...)
+  )
+
+}
+
+ggplot(test, aes(time = no_ev, time2 = ev)) + geom_icens() +
+  stat_icetic()
 
