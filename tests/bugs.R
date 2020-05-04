@@ -1,7 +1,7 @@
 if(FALSE){
 
 library(survival)
-library(ggkm)
+library(ggsurv)
 
   se = TRUE; trans = "identity"; firstx = 0; firsty = 1;
   type = "kaplan-meier"; error = "tsiatis"; conf.type = "log";
