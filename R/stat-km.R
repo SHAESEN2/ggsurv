@@ -6,82 +6,86 @@
 
 #' @rdname stat_km
 #' @export
-
 StatKm <- ggplot2::ggproto("StatKm", Stat,
+  compute_group = function(data, scales, trans = "identity", firstx = 0, firsty = 1,
+                           type = "kaplan-meier", start.time = 0) {
+    sf <- survival::survfit.formula(survival::Surv(data$time, data$status) ~ 1,
+      se.fit = FALSE,
+      type = type, start.time = start.time
+    )
 
-                           compute_group = function(data, scales, trans = "identity", firstx = 0, firsty = 1,
-                                                    type = "kaplan-meier", start.time = 0) {
+    transloc <- scales::as.trans(trans)$trans
 
-                             sf <- survival::survfit.formula(survival::Surv(data$time, data$status) ~ 1, se.fit = FALSE,
-                                                             type = type, start.time = start.time)
+    if (is.null(sf$surv)) {
+      x <- rep(sf$time, 2)
+      sf$surv <- rep(1, length(x))
+    }
 
-                             transloc <- scales::as.trans(trans)$trans
+    x <- c(firstx, sf$time)
+    y <- transloc(c(firsty, sf$surv))
+    y[y == -Inf] <- min(y[is.finite(y)])
+    y[y == Inf] <- max(y[is.finite(y)])
 
-                             if(is.null(sf$surv)) {
-                               x <- rep(sf$time, 2)
-                               sf$surv <- rep(1, length(x))
-                             }
+    data.frame(time = x, survival = y)
+  },
 
-                             x <- c(firstx, sf$time)
-                             y <- transloc(c(firsty, sf$surv))
-                             y[y == -Inf] <- min(y[is.finite(y)])
-                             y[y == Inf] <- max(y[is.finite(y)])
-
-                             step <- dostep(x, y)
-                             df.out <- data.frame(time = step$x, survival = step$y)
-
-                             df.out
-
-                           },
-
-                           default_aes = ggplot2::aes(y = ..survival.., x = ..time..),
-                           required_aes = c("time", "status")
-
-
+  default_aes = ggplot2::aes(y = ..survival.., x = ..time..),
+  required_aes = c("time", "status")
 )
 
 #' @importFrom ggplot2 layer aes ggproto
 #' @import scales
 #' @importFrom survival Surv survfit.formula
 #' @importFrom grid pointsGrob nullGrob unit gpar gList
-
 #' @export
-
 StatIcens <- ggplot2::ggproto("StatIcens", Stat,
+  required_aes = c("time", "time2"),
+  default_aes = ggplot2::aes(y = ..survival.., x = ..time..),
+  compute_group = function(data, scales, params, trans = "identity", ...) {
+    fit_icens <- survival::survfit.formula(
+      survival::Surv(
+        time = data$time, time2 = data$time2,
+        type = "interval2"
+      ) ~ 1,
+      data = data, ...
+    )
+    transloc <- scales::as.trans(trans)$trans
 
-                           compute_group = function(data, scales, params, trans = "identity", firstx = 0, firsty = 1,
-                                                    type = "kaplan-meier", start.time = 0) {
+    y <- transloc(fit_icens$surv)
+    y[y == -Inf] <- min(y[is.finite(y)])
+    y[y == Inf] <- max(y[is.finite(y)])
 
-                             sf <- survival::survfit.formula(survival::Surv(time = data$time, time2 = data$time2, type = "interval2") ~ 1, se.fit = FALSE,
-                                                              start.time = start.time)
-
-                             transloc <- scales::as.trans(trans)$trans
-
-                             if(is.null(sf$surv)) {
-                               x <- rep(sf$time, 2)
-                               sf$surv <- rep(1, length(x))
-                             }
-
-                             x <- c(firstx, sf$time)
-                             y <- transloc(c(firsty, sf$surv))
-                             y[y == -Inf] <- min(y[is.finite(y)])
-                             y[y == Inf] <- max(y[is.finite(y)])
-
-                             step <- dostep(x, y)
-                             df.out <- data.frame(time = step$x, survival = step$y)
-
-                             df.out
-
-                           },
-
-                           default_aes = ggplot2::aes(y = ..survival.., x = ..time..),
-                           required_aes = c("time", "time2")
-
-
+    data.frame(time = fit_icens$time, survival = fit_icens$surv)
+  },
+  compute_layer = function(self, data, params, layout) {
+    ggplot2:::check_required_aesthetics(self$required_aes, c(
+      names(data),
+      names(params)
+    ), snake_class(self))
+    data <- remove_missing(data, params$na.rm, "time",
+      ggplot2:::snake_class(self),
+      finite = TRUE
+    )
+    params <- params[intersect(names(params), self$parameters())]
+    args <- c(list(data = quote(data), scales = quote(scales)), params)
+    ggplot2:::dapply(data, "PANEL", function(data) {
+      scales <- layout$get_scales(data$PANEL[1])
+      tryCatch(do.call(self$compute_panel, args),
+        error = function(e) {
+          warning("Computation failed in `",
+            ggplot2:::snake_class(self),
+            "()`:\n", e$message,
+            call. = FALSE
+          )
+          ggplot2:::new_data_frame()
+        }
+      )
+    })
+  }
 )
+
+
 ## need to create a different stat for kmticks
-
-
 #' @importFrom ggplot2 layer aes ggproto
 #' @import scales
 #' @importFrom survival Surv survfit.formula
@@ -154,16 +158,11 @@ StatKmband <- ggplot2::ggproto("StatKmband", Stat,
 #' @rdname stat_icens
 #' @details
 #'
-#' This stat is for computing the confidence intervals for the Kaplan-Meier survival estimate for
-#' right-censored data. It requires the aesthetic mapping \code{x} for the
-#' observation times and \code{status} which indicates the event status,
-#' 0=alive, 1=dead or 1/2 (2=death). Logical status is not supported.
 #'
 
-stat_icens <- function(mapping = NULL, data = NULL, geom = "icens",
+stat_icens <- function(mapping = NULL, data = NULL, geom = "step",
                     position = "identity", show.legend = NA, inherit.aes = TRUE,
-                    se = TRUE, trans = "identity", firstx = 0, firsty = 1,
-                    type = "kaplan-meier", start.time = 0, ...) {
+                    se = TRUE, trans = "identity",  ...) {
   ggplot2::layer(
     stat = StatIcens,
     data = data,
@@ -172,8 +171,7 @@ stat_icens <- function(mapping = NULL, data = NULL, geom = "icens",
     position = position,
     show.legend = show.legend,
     inherit.aes = inherit.aes,
-    params = list(trans = trans, firstx = firstx, firsty = firsty,
-                  type = type, start.time = start.time, ...)
+    params = list(trans = trans, ...)
   )
 
 }
@@ -230,7 +228,7 @@ stat_icens <- function(mapping = NULL, data = NULL, geom = "icens",
 #' p1 + stat_km(start.time = 5)
 #'
 
-stat_km <- function(mapping = NULL, data = NULL, geom = "km",
+stat_km <- function(mapping = NULL, data = NULL, geom = "step",
                     position = "identity", show.legend = NA, inherit.aes = TRUE,
                     se = TRUE, trans = "identity", firstx = 0, firsty = 1,
                     type = "kaplan-meier", start.time = 0) {

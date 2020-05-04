@@ -7,16 +7,12 @@
 stat_icens(
   mapping = NULL,
   data = NULL,
-  geom = "icens",
+  geom = "step",
   position = "identity",
   show.legend = NA,
   inherit.aes = TRUE,
   se = TRUE,
   trans = "identity",
-  firstx = 0,
-  firsty = 1,
-  type = "kaplan-meier",
-  start.time = 0,
   ...
 )
 }
@@ -61,17 +57,14 @@ the default plot specification, e.g. \code{\link[ggplot2:borders]{borders()}}.}
 to "identity". Other options include "event", "cumhaz", "cloglog", or
 define your own using \link{trans_new}.}
 
+\item{...}{Other arguments passed to \code{survival::survfit.formula}}
+
 \item{firstx, firsty}{the starting point for the survival curves. By default,
 the plot program obeys tradition by having the plot start at (0,1).}
-
-\item{...}{Other arguments passed to \code{survival::survfit.formula}}
 }
 \description{
 Adds a Kaplan Meier Estimate of Survival
 }
 \details{
-This stat is for computing the confidence intervals for the Kaplan-Meier survival estimate for
-right-censored data. It requires the aesthetic mapping \code{x} for the
-observation times and \code{status} which indicates the event status,
-0=alive, 1=dead or 1/2 (2=death). Logical status is not supported.
+
 }

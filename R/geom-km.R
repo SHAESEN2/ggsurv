@@ -1,52 +1,3 @@
-
-#' Display Kaplan Meier Curve
-#'
-#' Kaplan Meier Curve
-#'
-#' @export
-#' @rdname geom_km
-
-
-GeomKm <- ggplot2::ggproto("GeomKm", Geom,
-
-                  draw_group = function(data, scales, coordinates, ...) {
-
-                    path <- transform(data, alpha = NA)
-                    GeomPath$draw_panel(path, scales, coordinates)
-
-                  },
-
-                  required_aes = c("x", "y"),
-                  default_aes = ggplot2::aes(colour="black", fill="grey60", size=.75,
-                                    linetype=1, weight=1, alpha = 1),
-                  draw_key = draw_key_path
-
-
-)
-
-#' Display Kaplan Meier Curve
-#'
-#' Kaplan Meier Curve
-#'
-#' @export
-
-GeomIcens <- ggplot2::ggproto("GeomIcens", Geom,
-
-                           draw_group = function(data, scales, coordinates, ...) {
-
-                             path <- transform(data, alpha = NA)
-                             GeomPath$draw_panel(path, scales, coordinates)
-
-                           },
-
-                           required_aes = c("x", "y"),
-                           default_aes = ggplot2::aes(colour="black", fill="grey60", size=.75,
-                                                      linetype=1, weight=1, alpha = 1),
-                           draw_key = draw_key_path
-
-
-)
-
 #' Add a Kaplan-Meier survival curve
 #'
 #' @inheritParams ggplot2::geom_point
@@ -60,7 +11,7 @@ geom_icens <- function(mapping = NULL, data = NULL, stat = "icens",
                     position = "identity", show.legend = NA,
                     inherit.aes = TRUE, na.rm = TRUE, ...) {
   ggplot2::layer(
-    geom = GeomIcens, mapping = mapping, data = data, stat = stat,
+    geom = GeomStep, mapping = mapping, data = data, stat = stat,
     position = position, show.legend = show.legend, inherit.aes = inherit.aes,
     params = list(na.rm = na.rm, ...)
   )
@@ -94,7 +45,7 @@ geom_km <- function(mapping = NULL, data = NULL, stat = "km",
                     position = "identity", show.legend = NA,
                     inherit.aes = TRUE, na.rm = TRUE, ...) {
   ggplot2::layer(
-    geom = GeomKm, mapping = mapping, data = data, stat = stat,
+    geom = GeomStep, mapping = mapping, data = data, stat = stat,
     position = position, show.legend = show.legend, inherit.aes = inherit.aes,
     params = list(na.rm = na.rm, ...)
   )

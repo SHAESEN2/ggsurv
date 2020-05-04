@@ -14,7 +14,7 @@ StatKm
 stat_km(
   mapping = NULL,
   data = NULL,
-  geom = "km",
+  geom = "step",
   position = "identity",
   show.legend = NA,
   inherit.aes = TRUE,
