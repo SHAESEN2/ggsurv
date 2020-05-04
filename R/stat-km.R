@@ -52,8 +52,8 @@ StatIcens <- ggplot2::ggproto("StatIcens", Stat,
                            compute_group = function(data, scales, trans = "identity", firstx = 0, firsty = 1,
                                                     type = "kaplan-meier", start.time = 0) {
 
-                             sf <- survival::survfit.formula(survival::Surv(time = data$time, time2 = data$time2) ~ 1, se.fit = FALSE,
-                                                             type = "interval2", start.time = start.time)
+                             sf <- survival::survfit.formula(survival::Surv(time = data$time, time2 = data$time2, type = "interval2") ~ 1, se.fit = FALSE,
+                                                              start.time = start.time)
 
                              transloc <- scales::as.trans(trans)$trans
 
