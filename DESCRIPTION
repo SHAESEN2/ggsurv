@@ -8,6 +8,7 @@ Maintainer: Michael C Sachs <sachsmc@gmail.com>
 Description: Plot Kaplan-Meier Curves using ggplot2. Includes confidence bands and tick marks.
 License: MIT + file LICENSE
 LazyData: TRUE
+Encoding: UTF-8
 Depends:
     R (>= 2.10),
     ggplot2,

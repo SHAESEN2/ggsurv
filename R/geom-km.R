@@ -56,7 +56,7 @@ GeomIcens <- ggplot2::ggproto("GeomIcens", Geom,
 #' df <- data.frame(time = exp(rnorm(250, mean = sex)), status = rbinom(250, 1, .75), sex = sex)
 #' ggplot(df, aes(time = time, status = status, color = factor(sex))) + geom_km()
 
-geom_icens <- function(mapping = NULL, data = NULL, stat = "km",
+geom_icens <- function(mapping = NULL, data = NULL, stat = "icens",
                     position = "identity", show.legend = NA,
                     inherit.aes = TRUE, na.rm = TRUE, ...) {
   ggplot2::layer(

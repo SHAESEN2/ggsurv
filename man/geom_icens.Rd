@@ -7,7 +7,7 @@
 geom_icens(
   mapping = NULL,
   data = NULL,
-  stat = "km",
+  stat = "icens",
   position = "identity",
   show.legend = NA,
   inherit.aes = TRUE,
