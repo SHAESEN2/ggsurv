@@ -496,6 +496,4 @@ stat_icetic <- function(mapping = NULL, data = NULL, geom = "kmticks",
 
 }
 
-ggplot(test, aes(time = no_ev, time2 = ev)) + geom_icens() +
-  stat_icetic()
 
