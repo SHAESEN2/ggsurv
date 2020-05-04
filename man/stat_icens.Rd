@@ -16,7 +16,8 @@ stat_icens(
   firstx = 0,
   firsty = 1,
   type = "kaplan-meier",
-  start.time = 0
+  start.time = 0,
+  ...
 )
 }
 \arguments{

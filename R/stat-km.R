@@ -49,7 +49,7 @@ StatKm <- ggplot2::ggproto("StatKm", Stat,
 
 StatIcens <- ggplot2::ggproto("StatIcens", Stat,
 
-                           compute_group = function(data, scales, trans = "identity", firstx = 0, firsty = 1,
+                           compute_group = function(data, scales, params, trans = "identity", firstx = 0, firsty = 1,
                                                     type = "kaplan-meier", start.time = 0) {
 
                              sf <- survival::survfit.formula(survival::Surv(time = data$time, time2 = data$time2, type = "interval2") ~ 1, se.fit = FALSE,
@@ -163,7 +163,7 @@ StatKmband <- ggplot2::ggproto("StatKmband", Stat,
 stat_icens <- function(mapping = NULL, data = NULL, geom = "icens",
                     position = "identity", show.legend = NA, inherit.aes = TRUE,
                     se = TRUE, trans = "identity", firstx = 0, firsty = 1,
-                    type = "kaplan-meier", start.time = 0) {
+                    type = "kaplan-meier", start.time = 0, ...) {
   ggplot2::layer(
     stat = StatIcens,
     data = data,
@@ -173,7 +173,7 @@ stat_icens <- function(mapping = NULL, data = NULL, geom = "icens",
     show.legend = show.legend,
     inherit.aes = inherit.aes,
     params = list(trans = trans, firstx = firstx, firsty = firsty,
-                  type = type, start.time = start.time)
+                  type = type, start.time = start.time, ...)
   )
 
 }
