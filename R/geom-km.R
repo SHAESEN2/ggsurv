@@ -17,6 +17,21 @@ geom_icens <- function(mapping = NULL, data = NULL, stat = "icens",
   )
 }
 
+#' Add a ticks to curve with interval censored data
+#'
+#' @inheritParams ggplot2::geom_point
+#' @export
+
+geom_icetic <- function(mapping = NULL, data = NULL, stat = "icetic",
+                         position = "identity", show.legend = NA,
+                         inherit.aes = TRUE, na.rm = TRUE, ...) {
+  ggplot2::layer(
+    geom = GeomKmticks, mapping = mapping, data = data, stat = stat,
+    position = position, show.legend = show.legend, inherit.aes = inherit.aes,
+    params = list(na.rm = na.rm, ...)
+  )
+}
+
 #' Add a Kaplan-Meier survival curve
 #'
 #' @section Aesthetics:
